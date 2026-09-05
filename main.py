@@ -11,67 +11,64 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. CSS PERSONALIZADO (Corrección definitiva de barra lateral y uploader)
+# 2. CSS PERSONALIZADO (Blindado para forzar Modo Oscuro)
 st.markdown(
     """
 <style>
-    /* Fondo oscuro principal */
-    .stApp {
+    /* 1. Forzar Fondo Oscuro en la App y el Encabezado Superior (elimina la franja blanca) */
+    .stApp, header[data-testid="stHeader"], .block-container {
         background-color: #0E1117 !important;
+    }
+
+    /* 2. Forzar Color de Texto Claro en TODA la aplicación */
+    .stApp, .stApp * {
         color: #FAFAFA !important;
     }
 
-    /* BARRA LATERAL VISIBLE Y OSCURA */
+    /* 3. Barra Lateral Oscura */
     section[data-testid="stSidebar"] {
         background-color: #111827 !important;
         border-right: 1px solid #1F2937 !important;
-        display: block !important;
-        visibility: visible !important;
-    }
-    section[data-testid="stSidebar"] * {
-        color: #FAFAFA !important;
     }
 
-    /* CAJA DE CARGA DE ARCHIVOS (File Uploader) */
+    /* 4. Formularios, Inputs, Selects y Caja de Subida (File Uploader) */
+    input, .stTextInput input, .stSelectbox select, .stNumberInput input, 
     [data-testid="stFileUploader"] > div,
     [data-testid="stFileUploader"] section, 
     [data-testid="stFileUploadDropzone"] {
         background-color: #1F2937 !important;
-        color: #FAFAFA !important;
-        border-color: #374151 !important;
-    }
-    [data-testid="stFileUploader"] * {
-        color: #FAFAFA !important;
-    }
-
-    /* Formularios e Inputs */
-    input, .stTextInput input, .stSelectbox select, .stNumberInput input {
-        background-color: #1F2937 !important;
         color: #FFFFFF !important;
         border-color: #374151 !important;
     }
+    
+    /* 5. Asegurar que el placeholder de los inputs no se pierda */
+    ::placeholder {
+        color: #9CA3AF !important;
+    }
 
-    /* Botones principales */
+    /* 6. Botones principales (naranjas) */
     div.stButton > button {
-        background: linear-gradient(135deg, #FF7A00 0%, #E65C00 100%);
+        background: linear-gradient(135deg, #FF7A00 0%, #E65C00 100%) !important;
         color: white !important;
-        border: none;
-        border-radius: 8px;
-        padding: 10px 24px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        width: 100%;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 10px 24px !important;
+        font-weight: bold !important;
+        transition: all 0.3s ease !important;
+        width: 100% !important;
     }
     div.stButton > button:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(255, 122, 0, 0.4);
+        box-shadow: 0 8px 15px rgba(255, 122, 0, 0.4) !important;
     }
+    
+    /* 7. Botón de Descarga (verde) */
     div.stDownloadButton > button {
-        background: linear-gradient(135deg, #28A745 0%, #218838 100%);
+        background: linear-gradient(135deg, #28A745 0%, #218838 100%) !important;
         color: white !important;
     }
 
-    /* Ocultar elementos secundarios innecesarios de Streamlit */
+    /* 8. Ocultar basura innecesaria de Streamlit */
     footer { display: none !important; }
     .stAppDeployButton { display: none !important; }
 </style>
@@ -139,7 +136,7 @@ def obtener_nivel(puntos):
 
 # 4. NAVEGACIÓN
 st.sidebar.markdown(
-    "<h2 style='text-align: center;'>🐾 FRAE Link</h2>", unsafe_allow_html=True
+    "<h2 style='text-align: center; color: #FF7A00;'>🐾 FRAE Link</h2>", unsafe_allow_html=True
 )
 st.sidebar.markdown("---")
 
