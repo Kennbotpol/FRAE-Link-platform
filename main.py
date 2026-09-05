@@ -477,4 +477,37 @@ elif opcion == "🔍 Panel de Auditoría":
     st.dataframe(feedback_df, use_container_width=True, hide_index=True)
 
     csv_feedback = feedback_df.to_csv(
-        index=False, sep=";", encoding="
+        index=False, sep=";", encoding="utf-8-sig"
+    )
+    st.download_button(
+        label="📥 Descargar Reporte de Satisfacción (Excel)",
+        data=csv_feedback,
+        file_name="metricas_satisfaccion_voluntarios.csv",
+        mime="text/csv",
+    )
+
+  st.divider()
+  st.subheader("📸 Auditoría de Tareas")
+  evidencias_df = pd.read_sql_query(
+      """
+        SELECT t.id, v.nombre, t.tarea, t.puntos, t.fecha, t.evidencia 
+        FROM tareas_registradas t 
+        JOIN voluntarios v ON t.voluntario_id = v.id 
+        ORDER BY t.fecha DESC
+    """,
+      conn,
+  )
+  conn.close()
+
+  if evidencias_df.empty:
+    st.info("No hay evidencias reportadas.")
+  else:
+    for _, row in evidencias_df.iterrows():
+      with st.expander(
+          f"👤 {row['nombre']} | 🗓️ {row['fecha']} | 🏆 {row['puntos']} pts"
+      ):
+        st.write(f"**Actividad:** {row['tarea']}")
+        if row["evidencia"]:
+          st.image(row["evidencia"], use_container_width=True)
+        else:
+          st.write("Sin imagen adjunta.")
