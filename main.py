@@ -3,26 +3,87 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
+# 1. CONFIGURACIÓN DE PÁGINA
 st.set_page_config(
-    page_title="FRAE Link - Gestión de Voluntarios",
+    page_title="FRAE Link - Voluntariado",
     page_icon="🐾",
     layout="centered",
+    initial_sidebar_state="expanded"
 )
 
-# Ocultar menú superior, encabezado y pie de página de Streamlit
-hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            header {visibility: hidden;}
-            </style>
-            """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+# 2. CSS PERSONALIZADO (Mantiene visible el botón para abrir/cerrar el menú)
+st.markdown("""
+<style>
+    /* Ocultar únicamente el menú secundario y el pie de página */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    /* Botón de reapertura del menú lateral en la esquina superior izquierda */
+    [data-testid="stSidebarCollapsedControl"] {
+        display: block !important;
+        visibility: visible !important;
+        z-index: 999999 !important;
+        background-color: rgba(255, 122, 0, 0.2) !important;
+        border-radius: 8px !important;
+        margin: 10px !important;
+    }
+
+    /* Títulos e identidad visual */
+    h1 {
+        color: #FF7A00 !important;
+        font-weight: 800 !important;
+        text-align: center;
+    }
+    h2, h3 {
+        color: #F3F4F6 !important;
+        font-weight: 600 !important;
+    }
+
+    /* Botones principales con degradado */
+    div.stButton > button {
+        background: linear-gradient(135deg, #FF7A00 0%, #E65C00 100%);
+        color: white !important;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    div.stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(255, 122, 0, 0.4);
+    }
+    div.stDownloadButton > button {
+        background: linear-gradient(135deg, #28A745 0%, #218838 100%);
+    }
+
+    /* Tarjetas de Métricas */
+    div[data-testid="metric-container"] {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 122, 0, 0.2);
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+    }
+    div[data-testid="metric-container"] label {
+        color: #FF7A00 !important;
+        font-weight: 600;
+    }
+
+    /* Cuadro de aviso */
+    div.stAlert {
+        background-color: rgba(255, 122, 0, 0.1);
+        border-left: 5px solid #FF7A00;
+        border-radius: 8px;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 
+# 3. BASE DE DATOS
 def conectar_db():
     return sqlite3.connect("frae_link.db")
-
 
 def crear_tablas():
     conn = conectar_db()
@@ -49,56 +110,72 @@ def crear_tablas():
             FOREIGN KEY (voluntario_id) REFERENCES voluntarios (id)
         )
     """)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS encuestas_satisfaccion (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            voluntario_id INTEGER,
+            calificacion INTEGER,
+            comentario TEXT,
+            fecha TEXT,
+            FOREIGN KEY (voluntario_id) REFERENCES voluntarios (id)
+        )
+    """)
     conn.commit()
     conn.close()
 
-
 crear_tablas()
 
-
 def obtener_nivel(puntos):
-    if puntos >= 150:
-        return "🥇 Embajador FRAE"
-    elif puntos >= 80:
-        return "🥈 Defensor Activo"
-    elif puntos >= 30:
-        return "🥉 Voluntario Aliado"
+    if puntos >= 150: return "🥇 Embajador FRAE"
+    elif puntos >= 80: return "🥈 Defensor Activo"
+    elif puntos >= 30: return "🥉 Voluntario Aliado"
     return "🌱 Voluntario Semilla"
 
 
-st.title("🐾 FRAE Link: Sistema de Voluntariado")
-st.caption("Plataforma de registro y control de voluntariado")
+# 4. NAVEGACIÓN Y ESTRUCTURA
+st.sidebar.markdown("<h2 style='text-align: center;'>🐾 FRAE Link</h2>", unsafe_allow_html=True)
+st.sidebar.markdown("---")
 
 opcion = st.sidebar.radio(
-    "Selecciona una opción:",
+    "Navegación:",
     [
         "📝 Registro",
         "⚡ Reportar Tarea",
         "👤 Mi Perfil",
-        "🏆 Ranking y Métricas",
-        "🔍 Audit de Evidencias",
+        "🏆 Ranking e Impacto Real",
+        "🔍 Panel de Auditoría",
     ],
 )
 
-# 1. REGISTRO DE VOLUNTARIOS
+if opcion != "📝 Registro":
+    st.title("🐾 FRAE Link")
+    st.markdown("<p style='text-align: center; color: #9CA3AF; margin-bottom: 30px;'>Sistema Inteligente de Voluntariado</p>", unsafe_allow_html=True)
+
+# --- 1. REGISTRO ---
 if opcion == "📝 Registro":
-    st.header("Formulario de Inscripción")
+    st.title("🐾 Únete a FRAE")
+    st.markdown("<p style='text-align: center; color: #9CA3AF;'>Inicia tu viaje como voluntario digital</p><br>", unsafe_allow_html=True)
+    
     with st.form("form_registro", clear_on_submit=True):
-        nombre = st.text_input("Nombre completo:")
-        email = st.text_input("Correo electrónico:")
-        edad = st.number_input(
-            "Edad:", min_value=12, max_value=100, value=20, step=1
-        )
-        foto_perfil = st.file_uploader(
-            "Foto de perfil (Opcional):", type=["jpg", "jpeg", "png"]
-        )
-        submit = st.form_submit_button("Registrarme como Voluntario")
+        st.subheader("Datos Personales")
+        col1, col2 = st.columns(2)
+        with col1:
+            nombre = st.text_input("Nombre completo:")
+        with col2:
+            email = st.text_input("Correo electrónico:")
+            
+        col3, col4 = st.columns([1, 2])
+        with col3:
+            edad = st.number_input("Edad:", min_value=12, max_value=100, value=20, step=1)
+        with col4:
+            foto_perfil = st.file_uploader("Foto de perfil (Opcional):", type=["jpg", "jpeg", "png"])
+            
+        st.markdown("<br>", unsafe_allow_html=True)
+        submit = st.form_submit_button("🚀 Registrarme como Voluntario")
 
         if submit:
             if nombre and email:
-                foto_bytes = (
-                    foto_perfil.read() if foto_perfil is not None else None
-                )
+                foto_bytes = foto_perfil.read() if foto_perfil is not None else None
                 conn = conectar_db()
                 cursor = conn.cursor()
                 fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -108,180 +185,219 @@ if opcion == "📝 Registro":
                         (nombre, email, int(edad), foto_bytes, fecha_actual),
                     )
                     conn.commit()
-                    st.success(
-                        f"¡Bienvenido/a a FRAE Link, {nombre}! Registro exitoso."
-                    )
+                    st.success(f"¡Bienvenido/a a la familia, {nombre}! Tu registro fue exitoso.")
+                    st.balloons()
                 except sqlite3.IntegrityError:
                     st.error("Este correo electrónico ya está registrado.")
                 finally:
                     conn.close()
             else:
-                st.warning("Completa los campos obligatorios.")
+                st.warning("⚠️ Completa tu nombre y correo para continuar.")
 
-# 2. REPORTAR TAREA
+# --- 2. REPORTAR TAREA ---
 elif opcion == "⚡ Reportar Tarea":
-    st.header("Registrar Tarea Completada")
-    conn = conectar_db()
-    voluntarios_df = pd.read_sql_query(
-        "SELECT id, nombre, email FROM voluntarios", conn
+    st.subheader("⚡ Reportar Nueva Acción")
+
+    st.info(
+        "🔥 **MISIÓN DE LA SEMANA (Especial Substack):**\n\n"
+        "Difundir el caso de adopción urgente de Bruno en tu estado de WhatsApp o Instagram (+30 pts)."
     )
+
+    conn = conectar_db()
+    voluntarios_df = pd.read_sql_query("SELECT id, nombre, email FROM voluntarios", conn)
     conn.close()
 
     if voluntarios_df.empty:
-        st.info("Aún no hay voluntarios registrados.")
+        st.warning("Aún no hay voluntarios registrados en el sistema.")
     else:
-        opciones = {
-            f"{row['nombre']} ({row['email']})": row["id"]
-            for _, row in voluntarios_df.iterrows()
-        }
-        vol_sel = st.selectbox("Selecciona tu usuario:", list(opciones.keys()))
+        opciones = {f"{row['nombre']} ({row['email']})": row["id"] for _, row in voluntarios_df.iterrows()}
+        
+        with st.container():
+            vol_sel = st.selectbox("👤 ¿Quién eres?", list(opciones.keys()))
+            
+            tareas = {
+                "🔥 Misión Semanal: Difusión caso Bruno (+30 pts)": 30,
+                "Difusión en redes sociales / estados (+15 pts)": 15,
+                "Organización y verificación de datos (+20 pts)": 20,
+                "Creación de arte / diseño gráfico (+25 pts)": 25,
+                "Redacción de historias / contenido (+25 pts)": 25,
+                "Inscripción de un nuevo voluntario (+30 pts)": 30,
+                "Apoyo presencial en eventos o rescates (+50 pts)": 50,
+            }
+            cat_tarea = st.selectbox("📋 Acción completada:", list(tareas.keys()))
+            evidencia = st.file_uploader("📸 Sube la captura de pantalla o foto (Evidencia obligatoria):", type=["jpg", "jpeg", "png"])
 
-        tareas = {
-            "Difusión en redes sociales / estados (+15 pts)": 15,
-            "Organización y verificación de datos (+20 pts)": 20,
-            "Creación de arte / diseño gráfico (+25 pts)": 25,
-            "Redacción de historias / contenido (+25 pts)": 25,
-            "Inscripción de un nuevo voluntario (+30 pts)": 30,
-            "Apoyo en eventos o rescates (+50 pts)": 50,
-        }
-        cat_tarea = st.selectbox("Tipo de tarea realizada:", list(tareas.keys()))
-        evidencia = st.file_uploader(
-            "Sube una foto o captura como comprobante:",
-            type=["jpg", "jpeg", "png"],
-        )
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("✅ Enviar Evidencia y Sumar Puntos"):
+                if not evidencia:
+                    st.error("⚠️ La captura es necesaria para validar tus puntos.")
+                else:
+                    vol_id = opciones[vol_sel]
+                    pts = tareas[cat_tarea]
+                    fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    conn = conectar_db()
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        "INSERT INTO tareas_registradas (voluntario_id, tarea, puntos, evidencia, fecha) VALUES (?, ?, ?, ?, ?)",
+                        (vol_id, cat_tarea, pts, evidencia.read(), fecha_actual),
+                    )
+                    cursor.execute("UPDATE voluntarios SET puntos = puntos + ? WHERE id = ?", (pts, vol_id))
+                    conn.commit()
+                    conn.close()
+                    st.success(f"¡Brillante! Se han añadido +{pts} puntos a tu perfil.")
+                    st.session_state["ultimo_vol_id"] = vol_id
 
-        if st.button("Guardar y Sumar Puntos"):
-            if not evidencia:
-                st.error("⚠️ Sube una captura como evidencia obligatoria.")
-            else:
-                vol_id = opciones[vol_sel]
-                pts = tareas[cat_tarea]
-                fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                conn = conectar_db()
-                cursor = conn.cursor()
-                cursor.execute(
-                    "INSERT INTO tareas_registradas (voluntario_id, tarea, puntos, evidencia, fecha) VALUES (?, ?, ?, ?, ?)",
-                    (
-                        vol_id,
-                        cat_tarea,
-                        pts,
-                        evidencia.read(),
-                        fecha_actual,
-                    ),
-                )
-                cursor.execute(
-                    "UPDATE voluntarios SET puntos = puntos + ? WHERE id = ?",
-                    (pts, vol_id),
-                )
-                conn.commit()
-                conn.close()
-                st.balloons()
-                st.success(f"¡Gran trabajo! +{pts} puntos asignados.")
+        if "ultimo_vol_id" in st.session_state:
+            st.divider()
+            st.subheader("💬 Encuesta de Experiencia")
+            st.caption("Ayúdanos a evaluar y mejorar la plataforma calificando tu experiencia:")
+            
+            with st.form("form_feedback", clear_on_submit=True):
+                calif = st.slider("Facilidad de la acción realizada (1=Difícil, 5=Muy fácil)", 1, 5, 5)
+                comentario = st.text_input("Observaciones o sugerencias de mejora:")
+                sub_fb = st.form_submit_button("Enviar Evaluación")
 
-# 3. MI PERFIL Y CARNET DIGITAL
+                if sub_fb:
+                    conn = conectar_db()
+                    cursor = conn.cursor()
+                    fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    cursor.execute(
+                        "INSERT INTO encuestas_satisfaccion (voluntario_id, calificacion, comentario, fecha) VALUES (?, ?, ?, ?)",
+                        (st.session_state["ultimo_vol_id"], calif, comentario, fecha_actual),
+                    )
+                    conn.commit()
+                    conn.close()
+                    st.success("¡Gracias por ayudarnos a mejorar FRAE Link!")
+                    del st.session_state["ultimo_vol_id"]
+
+# --- 3. MI PERFIL ---
 elif opcion == "👤 Mi Perfil":
-    st.header("Consulta tu Perfil y Rango")
-    email_buscar = st.text_input("Ingresa tu correo registrado:")
+    st.subheader("👤 Credencial Digital")
+    email_buscar = st.text_input("🔍 Ingresa tu correo de voluntario:")
+    
     if st.button("Buscar Perfil") and email_buscar:
         conn = conectar_db()
         cursor = conn.cursor()
-        cursor.execute(
-            "SELECT id, nombre, edad, puntos, foto_perfil FROM voluntarios WHERE email = ?",
-            (email_buscar,),
-        )
+        cursor.execute("SELECT id, nombre, edad, puntos, foto_perfil FROM voluntarios WHERE email = ?", (email_buscar,))
         user = cursor.fetchone()
 
         if user:
             v_id, nombre, edad, puntos, foto = user
             nivel = obtener_nivel(puntos)
 
+            st.markdown("<br>", unsafe_allow_html=True)
             col1, col2 = st.columns([1, 2])
             with col1:
                 if foto:
-                    st.image(foto, width=130)
+                    st.image(foto, width=150, output_format="PNG")
                 else:
-                    st.write("🖼️ *Sin foto de perfil*")
+                    st.info("🖼️ Sin foto")
             with col2:
-                st.subheader(nombre)
-                st.write(f"**Rango:** {nivel}")
-                st.write(f"**Puntos acumulados:** {puntos} pts")
-                st.write(f"**Edad:** {edad} años")
+                st.markdown(f"### {nombre}")
+                st.markdown(f"**Nivel Actual:** `{nivel}`")
+                st.markdown(f"**Impacto Total:** `{puntos} pts`")
+                st.markdown(f"**Edad:** {edad} años")
 
             st.divider()
-            st.write("**Historial de tareas completadas:**")
-            historial = pd.read_sql_query(
-                f"SELECT tarea, puntos, fecha FROM tareas_registradas WHERE voluntario_id = {v_id} ORDER BY fecha DESC",
-                conn,
-            )
-            st.dataframe(historial, use_container_width=True)
+            st.markdown("#### 📜 Tu Historial de Impacto")
+            historial = pd.read_sql_query(f"SELECT tarea, puntos, fecha FROM tareas_registradas WHERE voluntario_id = {v_id} ORDER BY fecha DESC", conn)
+            st.dataframe(historial, use_container_width=True, hide_index=True)
         else:
-            st.error("No se encontró ningún voluntario con ese correo.")
+            st.error("No se encontraron registros. Revisa el correo ingresado.")
         conn.close()
 
-# 4. RANKING Y MÉTRICAS
-elif opcion == "🏆 Ranking y Métricas":
-    st.header("🏆 Tablero de Impacto")
+# --- 4. RANKING E IMPACTO ---
+elif opcion == "🏆 Ranking e Impacto Real":
     conn = conectar_db()
-    df = pd.read_sql_query(
-        "SELECT nombre, puntos, edad FROM voluntarios ORDER BY puntos DESC",
-        conn,
-    )
+    df = pd.read_sql_query("SELECT nombre, puntos FROM voluntarios ORDER BY puntos DESC", conn)
     conn.close()
 
     if not df.empty:
-        df["Nivel / Rango"] = df["puntos"].apply(obtener_nivel)
-        df.index = df.index + 1
-        st.dataframe(df, use_container_width=True)
-
-        # Copia para exportar a Excel sin emojis corruptos
-        df_export = df.copy()
-        df_export["Nivel / Rango"] = (
-            df_export["Nivel / Rango"]
-            .str.replace("🥇 ", "")
-            .str.replace("🥈 ", "")
-            .str.replace("🥉 ", "")
-            .str.replace("🌱 ", "")
-        )
-
-        csv_excel = df_export.to_csv(index=False, sep=";", encoding="utf-8-sig")
-        st.download_button(
-            label="📥 Descargar Tablero (Formato Excel)",
-            data=csv_excel,
-            file_name="tablero_de_impacto.csv",
-            mime="text/csv",
-        )
-
-        st.divider()
-        st.subheader("📊 Resumen de Impacto Comunitario")
         total_puntos = df["puntos"].sum()
         total_voluntarios = len(df)
 
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Voluntarios Activos", total_voluntarios)
-        col2.metric("Puntos Acumulados", f"{total_puntos} pts")
-        col3.metric("Nivel Promedio", "Defensores Activos 🐾")
+        st.subheader("🌱 Impacto en el Refugio")
+        st.caption("Tus acciones digitales se traducen en ayuda real para los animales.")
+        
+        alimento_kg = int(total_puntos / 15)
+        vacunas = int(total_puntos / 50)
+        adopciones = int(total_puntos / 100)
 
-# 5. AUDITORÍA DE EVIDENCIAS
-elif opcion == "🔍 Audit de Evidencias":
-    st.header("Visualización de Evidencias Subidas")
+        col_a, col_b, col_c = st.columns(3)
+        col_a.metric("🍲 Alimento", f"~{alimento_kg} kg")
+        col_b.metric("💉 Vacunas", f"~{vacunas}")
+        col_c.metric("🏡 Adopciones", f"~{adopciones}")
+
+        st.divider()
+        st.subheader("🏆 Leaderboard de Voluntarios")
+        
+        df["Rango"] = df["puntos"].apply(obtener_nivel)
+        df.index = df.index + 1
+        st.dataframe(df, use_container_width=True)
+
+        df_export = df.copy()
+        df_export["Rango"] = df_export["Rango"].str.replace("🥇 ", "").str.replace("🥈 ", "").str.replace("🥉 ", "").str.replace("🌱 ", "")
+        csv_excel = df_export.to_csv(index=False, sep=";", encoding="utf-8-sig")
+        
+        st.download_button(
+            label="📥 Descargar Ranking (Excel)",
+            data=csv_excel,
+            file_name="tablero_de_impacto.csv",
+            mime="text/csv"
+        )
+    else:
+        st.info("Aún no hay datos suficientes para mostrar el tablero.")
+
+# --- 5. PANEL DE AUDITORÍA Y CONTROL ---
+elif opcion == "🔍 Panel de Auditoría":
+    st.subheader("📊 Métricas de Satisfacción")
+    st.caption("Datos en tiempo real sobre la experiencia y nivel de satisfacción de los voluntarios.")
+    
     conn = conectar_db()
+    feedback_df = pd.read_sql_query(
+        """
+        SELECT e.id, v.nombre, e.calificacion, e.comentario, e.fecha
+        FROM encuestas_satisfaccion e
+        JOIN voluntarios v ON e.voluntario_id = v.id
+        ORDER BY e.fecha DESC
+        """, conn
+    )
+
+    if feedback_df.empty:
+        st.info("Aún no se han recolectado métricas de experiencia.")
+    else:
+        promedio_calif = feedback_df["calificacion"].mean()
+        col1, col2 = st.columns(2)
+        col1.metric("Satisfacción Promedio", f"{promedio_calif:.2f} / 5.0 ⭐")
+        col2.metric("Muestras Totales (N)", len(feedback_df))
+
+        st.dataframe(feedback_df, use_container_width=True, hide_index=True)
+
+        csv_feedback = feedback_df.to_csv(index=False, sep=";", encoding="utf-8-sig")
+        st.download_button(
+            label="📥 Descargar Reporte de Satisfacción (Excel)",
+            data=csv_feedback,
+            file_name="metricas_satisfaccion_voluntarios.csv",
+            mime="text/csv"
+        )
+
+    st.divider()
+    st.subheader("📸 Auditoría de Tareas")
     evidencias_df = pd.read_sql_query(
         """
         SELECT t.id, v.nombre, t.tarea, t.puntos, t.fecha, t.evidencia 
         FROM tareas_registradas t 
         JOIN voluntarios v ON t.voluntario_id = v.id 
         ORDER BY t.fecha DESC
-    """,
-        conn,
-    )
+    """, conn)
     conn.close()
 
     if evidencias_df.empty:
-        st.info("No hay evidencias registradas aún.")
+        st.info("No hay evidencias reportadas.")
     else:
         for _, row in evidencias_df.iterrows():
-            with st.expander(f"{row['nombre']} - {row['tarea']} ({row['fecha']})"):
-                st.write(f"**Puntos otorgados:** {row['puntos']}")
+            with st.expander(f"👤 {row['nombre']} | 🗓️ {row['fecha']} | 🏆 {row['puntos']} pts"):
+                st.write(f"**Actividad:** {row['tarea']}")
                 if row["evidencia"]:
                     st.image(row["evidencia"], use_container_width=True)
                 else:
