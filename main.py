@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. CSS PERSONALIZADO (Modo Oscuro Global + Corrección de Barra Lateral e Inputs)
+# 2. CSS PERSONALIZADO (Modo Oscuro Global + Barra Lateral Correcta)
 st.markdown(
     """
 <style>
@@ -21,7 +21,7 @@ st.markdown(
         color: #FAFAFA !important;
     }
 
-    /* Fondo oscuro explícito para la barra lateral (Sidebar) */
+    /* Fondo oscuro explícito para el Sidebar */
     section[data-testid="stSidebar"] {
         background-color: #111827 !important;
         border-right: 1px solid #1F2937 !important;
@@ -30,13 +30,13 @@ st.markdown(
         color: #FAFAFA !important;
     }
 
-    /* Ocultar elementos del encabezado e interfaz interna */
+    /* Ocultar elementos secundarios del encabezado */
     footer { display: none !important; }
     .stAppDeployButton { display: none !important; }
     [data-testid="stStatusWidget"] { display: none !important; }
     [data-testid="stToolbar"] { visibility: hidden !important; }
     
-    /* Control del menú lateral visible y funcional */
+    /* Control del menú lateral desplegable */
     header[data-testid="stHeader"] {
         background-color: transparent !important;
         z-index: 1000 !important;
@@ -49,7 +49,7 @@ st.markdown(
         border-radius: 6px;
     }
 
-    /* Estilos de encabezados y textos */
+    /* Textos y Encabezados */
     h1 {
         color: #FF7A00 !important;
         font-weight: 800 !important;
@@ -59,14 +59,14 @@ st.markdown(
         color: #F3F4F6 !important;
     }
 
-    /* Estilos de cajas de texto e inputs */
+    /* Formuarios e Inputs */
     .stTextInput input, .stSelectbox select, .stNumberInput input, div[data-baseweb="input"] {
         background-color: #1F2937 !important;
         color: #FFFFFF !important;
         border-color: #374151 !important;
     }
     
-    /* Cajas de subida de archivos (File Uploader) */
+    /* Subida de archivos */
     div[data-testid="stFileUploadDropzone"] {
         background-color: #1F2937 !important;
         border: 1px dashed #374151 !important;
@@ -75,7 +75,7 @@ st.markdown(
         color: #E5E7EB !important;
     }
 
-    /* Botones principales y de descarga */
+    /* Botones */
     div.stButton > button {
         background: linear-gradient(135deg, #FF7A00 0%, #E65C00 100%);
         color: white !important;
@@ -108,7 +108,7 @@ st.markdown(
         font-weight: 600;
     }
 
-    /* Cuadro de aviso e información */
+    /* Alertas */
     div.stAlert {
         background-color: rgba(255, 122, 0, 0.1);
         border-left: 5px solid #FF7A00;
@@ -177,7 +177,7 @@ def obtener_nivel(puntos):
   return "🌱 Voluntario Semilla"
 
 
-# 4. NAVEGACIÓN Y ESTRUCTURA
+# 4. NAVEGACIÓN
 st.sidebar.markdown(
     "<h2 style='text-align: center;'>🐾 FRAE Link</h2>", unsafe_allow_html=True
 )
@@ -197,8 +197,8 @@ opcion = st.sidebar.radio(
 if opcion != "📝 Registro":
   st.title("🐾 FRAE Link")
   st.markdown(
-      "<p style='text-align: center; color: #9CA3AF; margin-bottom:"
-      " 30px;'>Sistema Inteligente de Voluntariado</p>",
+      "<p style='text-align: center; color: #9CA3AF; margin-bottom: 30px;'>"
+      "Sistema Inteligente de Voluntariado</p>",
       unsafe_allow_html=True,
   )
 
@@ -206,8 +206,8 @@ if opcion != "📝 Registro":
 if opcion == "📝 Registro":
   st.title("🐾 Únete a FRAE")
   st.markdown(
-      "<p style='text-align: center; color: #9CA3AF;'>Inicia tu viaje como"
-      " voluntario digital</p><br>",
+      "<p style='text-align: center; color: #9CA3AF;'>"
+      "Inicia tu viaje como voluntario digital</p><br>",
       unsafe_allow_html=True,
   )
 
@@ -240,8 +240,8 @@ if opcion == "📝 Registro":
         fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         try:
           cursor.execute(
-              "INSERT INTO voluntarios (nombre, email, edad, foto_perfil,"
-              " fecha_registro) VALUES (?, ?, ?, ?, ?)",
+              "INSERT INTO voluntarios (nombre, email, edad, foto_perfil, fecha_registro) "
+              "VALUES (?, ?, ?, ?, ?)",
               (nombre, email, int(edad), foto_bytes, fecha_actual),
           )
           conn.commit()
@@ -261,9 +261,8 @@ elif opcion == "⚡ Reportar Tarea":
   st.subheader("⚡ Reportar Nueva Acción")
 
   st.info(
-      "🔥 **MISIÓN DE LA SEMANA (Especial Substack):**\n\n"
-      "Difundir el caso de adopción urgente de Bruno en tu estado de WhatsApp"
-      " o Instagram (+30 pts)."
+      "🔥 **MISIÓN DE LA SEMANA:**\n\n"
+      "Difundir el caso de adopción urgente de Bruno en tu estado (+30 pts)."
   )
 
   conn = conectar_db()
@@ -294,7 +293,7 @@ elif opcion == "⚡ Reportar Tarea":
       }
       cat_tarea = st.selectbox("📋 Acción completada:", list(tareas.keys()))
       evidencia = st.file_uploader(
-          "📸 Sube la captura de pantalla o foto (Evidencia obligatoria):",
+          "📸 Sube la captura de pantalla o foto (Obligatoria):",
           type=["jpg", "jpeg", "png"],
       )
 
@@ -309,8 +308,8 @@ elif opcion == "⚡ Reportar Tarea":
           conn = conectar_db()
           cursor = conn.cursor()
           cursor.execute(
-              "INSERT INTO tareas_registradas (voluntario_id, tarea, puntos,"
-              " evidencia, fecha) VALUES (?, ?, ?, ?, ?)",
+              "INSERT INTO tareas_registradas (voluntario_id, tarea, puntos, evidencia, fecha) "
+              "VALUES (?, ?, ?, ?, ?)",
               (vol_id, cat_tarea, pts, evidencia.read(), fecha_actual),
           )
           cursor.execute(
@@ -325,10 +324,7 @@ elif opcion == "⚡ Reportar Tarea":
     if "ultimo_vol_id" in st.session_state:
       st.divider()
       st.subheader("💬 Encuesta de Experiencia")
-      st.caption(
-          "Ayúdanos a evaluar y mejorar la plataforma calificando tu"
-          " experiencia:"
-      )
+      st.caption("Ayúdanos a evaluar y mejorar la plataforma:")
 
       with st.form("form_feedback", clear_on_submit=True):
         calif = st.slider(
@@ -342,8 +338,8 @@ elif opcion == "⚡ Reportar Tarea":
           cursor = conn.cursor()
           fecha_actual = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
           cursor.execute(
-              "INSERT INTO encuestas_satisfaccion (voluntario_id, calificacion,"
-              " comentario, fecha) VALUES (?, ?, ?, ?)",
+              "INSERT INTO encuestas_satisfaccion (voluntario_id, calificacion, comentario, fecha) "
+              "VALUES (?, ?, ?, ?)",
               (st.session_state["ultimo_vol_id"], calif, comentario, fecha_actual),
           )
           conn.commit()
@@ -360,8 +356,7 @@ elif opcion == "👤 Mi Perfil":
     conn = conectar_db()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT id, nombre, edad, puntos, foto_perfil FROM voluntarios WHERE"
-        " email = ?",
+        "SELECT id, nombre, edad, puntos, foto_perfil FROM voluntarios WHERE email = ?",
         (email_buscar,),
     )
     user = cursor.fetchone()
@@ -386,8 +381,7 @@ elif opcion == "👤 Mi Perfil":
       st.divider()
       st.markdown("#### 📜 Tu Historial de Impacto")
       historial = pd.read_sql_query(
-          f"SELECT tarea, puntos, fecha FROM tareas_registradas WHERE"
-          f" voluntario_id = {v_id} ORDER BY fecha DESC",
+          f"SELECT tarea, puntos, fecha FROM tareas_registradas WHERE voluntario_id = {v_id} ORDER BY fecha DESC",
           conn,
       )
       st.dataframe(historial, use_container_width=True, hide_index=True)
@@ -405,7 +399,6 @@ elif opcion == "🏆 Ranking e Impacto Real":
 
   if not df.empty:
     total_puntos = df["puntos"].sum()
-    total_voluntarios = len(df)
 
     st.subheader("🌱 Impacto en el Refugio")
     st.caption(
@@ -436,7 +429,9 @@ elif opcion == "🏆 Ranking e Impacto Real":
         .str.replace("🥉 ", "")
         .str.replace("🌱 ", "")
     )
-    csv_excel = df_export.to_csv(index=False, sep=";", encoding="utf-8-sig")
+
+    enc_utf8 = "utf-8-sig"
+    csv_excel = df_export.to_csv(index=False, sep=";", encoding=enc_utf8)
 
     st.download_button(
         label="📥 Descargar Ranking (Excel)",
@@ -447,13 +442,10 @@ elif opcion == "🏆 Ranking e Impacto Real":
   else:
     st.info("Aún no hay datos suficientes para mostrar el tablero.")
 
-# --- 5. PANEL DE AUDITORÍA Y CONTROL ---
+# --- 5. PANEL DE AUDITORÍA ---
 elif opcion == "🔍 Panel de Auditoría":
   st.subheader("📊 Métricas de Satisfacción")
-  st.caption(
-      "Datos en tiempo real sobre la experiencia y nivel de satisfacción de los"
-      " voluntarios."
-  )
+  st.caption("Datos en tiempo real sobre la experiencia de los voluntarios.")
 
   conn = conectar_db()
   feedback_df = pd.read_sql_query(
@@ -476,13 +468,12 @@ elif opcion == "🔍 Panel de Auditoría":
 
     st.dataframe(feedback_df, use_container_width=True, hide_index=True)
 
-    csv_feedback = feedback_df.to_csv(
-        index=False, sep=";", encoding="utf-8-sig"
-    )
+    enc_utf8 = "utf-8-sig"
+    csv_feedback = feedback_df.to_csv(index=False, sep=";", encoding=enc_utf8)
     st.download_button(
         label="📥 Descargar Reporte de Satisfacción (Excel)",
         data=csv_feedback,
-        file_name="metricas_satisfaccion_voluntarios.csv",
+        file_name="metricas_satisfaccion.csv",
         mime="text/csv",
     )
 
