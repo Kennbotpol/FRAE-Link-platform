@@ -9,6 +9,16 @@ st.set_page_config(
     layout="centered",
 )
 
+# Ocultar menú superior, encabezado y pie de página de Streamlit
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 def conectar_db():
     return sqlite3.connect("frae_link.db")
