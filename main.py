@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. CSS PERSONALIZADO (Modo Oscuro Global + Barra Lateral Correcta)
+# 2. CSS PERSONALIZADO (Corrección definitiva de barra lateral y uploader)
 st.markdown(
     """
 <style>
@@ -21,61 +21,37 @@ st.markdown(
         color: #FAFAFA !important;
     }
 
-    /* Fondo oscuro explícito para el Sidebar */
+    /* BARRA LATERAL VISIBLE Y OSCURA */
     section[data-testid="stSidebar"] {
         background-color: #111827 !important;
         border-right: 1px solid #1F2937 !important;
+        display: block !important;
+        visibility: visible !important;
     }
     section[data-testid="stSidebar"] * {
         color: #FAFAFA !important;
     }
 
-    /* Ocultar elementos secundarios del encabezado */
-    footer { display: none !important; }
-    .stAppDeployButton { display: none !important; }
-    [data-testid="stStatusWidget"] { display: none !important; }
-    [data-testid="stToolbar"] { visibility: hidden !important; }
-    
-    /* Control del menú lateral desplegable */
-    header[data-testid="stHeader"] {
-        background-color: transparent !important;
-        z-index: 1000 !important;
+    /* CAJA DE CARGA DE ARCHIVOS (File Uploader) */
+    [data-testid="stFileUploader"] > div,
+    [data-testid="stFileUploader"] section, 
+    [data-testid="stFileUploadDropzone"] {
+        background-color: #1F2937 !important;
+        color: #FAFAFA !important;
+        border-color: #374151 !important;
     }
-    [data-testid="stSidebarCollapsedControl"] {
-        display: flex !important;
-        visibility: visible !important;
-        color: #FF7A00 !important;
-        background-color: #111827 !important;
-        border-radius: 6px;
+    [data-testid="stFileUploader"] * {
+        color: #FAFAFA !important;
     }
 
-    /* Textos y Encabezados */
-    h1 {
-        color: #FF7A00 !important;
-        font-weight: 800 !important;
-        text-align: center;
-    }
-    h2, h3, h4, h5, h6, label, p, span {
-        color: #F3F4F6 !important;
-    }
-
-    /* Formuarios e Inputs */
-    .stTextInput input, .stSelectbox select, .stNumberInput input, div[data-baseweb="input"] {
+    /* Formularios e Inputs */
+    input, .stTextInput input, .stSelectbox select, .stNumberInput input {
         background-color: #1F2937 !important;
         color: #FFFFFF !important;
         border-color: #374151 !important;
     }
-    
-    /* Subida de archivos */
-    div[data-testid="stFileUploadDropzone"] {
-        background-color: #1F2937 !important;
-        border: 1px dashed #374151 !important;
-    }
-    div[data-testid="stFileUploadDropzone"] * {
-        color: #E5E7EB !important;
-    }
 
-    /* Botones */
+    /* Botones principales */
     div.stButton > button {
         background: linear-gradient(135deg, #FF7A00 0%, #E65C00 100%);
         color: white !important;
@@ -95,25 +71,9 @@ st.markdown(
         color: white !important;
     }
 
-    /* Tarjetas de Métricas */
-    div[data-testid="metric-container"] {
-        background-color: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 122, 0, 0.2);
-        border-radius: 12px;
-        padding: 15px;
-        text-align: center;
-    }
-    div[data-testid="metric-container"] label {
-        color: #FF7A00 !important;
-        font-weight: 600;
-    }
-
-    /* Alertas */
-    div.stAlert {
-        background-color: rgba(255, 122, 0, 0.1);
-        border-left: 5px solid #FF7A00;
-        border-radius: 8px;
-    }
+    /* Ocultar elementos secundarios innecesarios de Streamlit */
+    footer { display: none !important; }
+    .stAppDeployButton { display: none !important; }
 </style>
 """,
     unsafe_allow_html=True,
