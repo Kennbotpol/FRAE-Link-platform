@@ -11,36 +11,42 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. CSS PERSONALIZADO (Modo oscuro + Menú lateral SIEMPRE funcional)
+# 2. CSS PERSONALIZADO (Modo Oscuro Global + Corrección de Barra Lateral e Inputs)
 st.markdown(
     """
 <style>
-    /* Fondo oscuro general */
+    /* Fondo oscuro principal */
     .stApp {
         background-color: #0E1117 !important;
         color: #FAFAFA !important;
     }
 
-    /* Ocultar pie de página y botones de la esquina superior derecha */
-    footer { visibility: hidden !important; height: 0px !important; }
+    /* Fondo oscuro explícito para la barra lateral (Sidebar) */
+    section[data-testid="stSidebar"] {
+        background-color: #111827 !important;
+        border-right: 1px solid #1F2937 !important;
+    }
+    section[data-testid="stSidebar"] * {
+        color: #FAFAFA !important;
+    }
+
+    /* Ocultar elementos del encabezado e interfaz interna */
+    footer { display: none !important; }
     .stAppDeployButton { display: none !important; }
     [data-testid="stStatusWidget"] { display: none !important; }
-    [data-testid="stDecoration"] { display: none !important; }
+    [data-testid="stToolbar"] { visibility: hidden !important; }
     
-    /* Ocultar únicamente el grupo de acciones superior derecho (Fork, Share, GitHub) */
-    div[data-testid="stToolbarActions"] { display: none !important; }
-    a[href*="github.com"] { display: none !important; }
-
-    /* Garantizar que el encabezado y el botón del menú lateral sean totalmente visibles */
+    /* Control del menú lateral visible y funcional */
     header[data-testid="stHeader"] {
         background-color: transparent !important;
-        z-index: 99999 !important;
+        z-index: 1000 !important;
     }
-    
     [data-testid="stSidebarCollapsedControl"] {
         display: flex !important;
         visibility: visible !important;
         color: #FF7A00 !important;
+        background-color: #111827 !important;
+        border-radius: 6px;
     }
 
     /* Estilos de encabezados y textos */
@@ -53,14 +59,23 @@ st.markdown(
         color: #F3F4F6 !important;
     }
 
-    /* Contenedores de inputs */
+    /* Estilos de cajas de texto e inputs */
     .stTextInput input, .stSelectbox select, .stNumberInput input, div[data-baseweb="input"] {
         background-color: #1F2937 !important;
         color: #FFFFFF !important;
         border-color: #374151 !important;
     }
+    
+    /* Cajas de subida de archivos (File Uploader) */
+    div[data-testid="stFileUploadDropzone"] {
+        background-color: #1F2937 !important;
+        border: 1px dashed #374151 !important;
+    }
+    div[data-testid="stFileUploadDropzone"] * {
+        color: #E5E7EB !important;
+    }
 
-    /* Botones principales */
+    /* Botones principales y de descarga */
     div.stButton > button {
         background: linear-gradient(135deg, #FF7A00 0%, #E65C00 100%);
         color: white !important;
@@ -93,7 +108,7 @@ st.markdown(
         font-weight: 600;
     }
 
-    /* Cuadro de aviso */
+    /* Cuadro de aviso e información */
     div.stAlert {
         background-color: rgba(255, 122, 0, 0.1);
         border-left: 5px solid #FF7A00;
@@ -462,37 +477,4 @@ elif opcion == "🔍 Panel de Auditoría":
     st.dataframe(feedback_df, use_container_width=True, hide_index=True)
 
     csv_feedback = feedback_df.to_csv(
-        index=False, sep=";", encoding="utf-8-sig"
-    )
-    st.download_button(
-        label="📥 Descargar Reporte de Satisfacción (Excel)",
-        data=csv_feedback,
-        file_name="metricas_satisfaccion_voluntarios.csv",
-        mime="text/csv",
-    )
-
-  st.divider()
-  st.subheader("📸 Auditoría de Tareas")
-  evidencias_df = pd.read_sql_query(
-      """
-        SELECT t.id, v.nombre, t.tarea, t.puntos, t.fecha, t.evidencia 
-        FROM tareas_registradas t 
-        JOIN voluntarios v ON t.voluntario_id = v.id 
-        ORDER BY t.fecha DESC
-    """,
-      conn,
-  )
-  conn.close()
-
-  if evidencias_df.empty:
-    st.info("No hay evidencias reportadas.")
-  else:
-    for _, row in evidencias_df.iterrows():
-      with st.expander(
-          f"👤 {row['nombre']} | 🗓️ {row['fecha']} | 🏆 {row['puntos']} pts"
-      ):
-        st.write(f"**Actividad:** {row['tarea']}")
-        if row["evidencia"]:
-          st.image(row["evidencia"], use_container_width=True)
-        else:
-          st.write("Sin imagen adjunta.")
+        index=False, sep=";", encoding="
