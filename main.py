@@ -15,47 +15,24 @@ st.set_page_config(
 st.markdown(
     """
 <style>
-    /* Fondo principal y barra lateral */
     .stApp, header[data-testid="stHeader"], .block-container { background-color: #0E1117 !important; }
     .stApp, .stApp * { color: #FAFAFA !important; }
     section[data-testid="stSidebar"] { background-color: #111827 !important; border-right: 1px solid #1F2937 !important; }
-    
-    /* Inputs genéricos y áreas de carga */
     input, .stTextInput input, .stSelectbox select, .stNumberInput input, 
     [data-testid="stFileUploader"] > div, [data-testid="stFileUploader"] section, [data-testid="stFileUploadDropzone"] {
-        background-color: #1F2937 !important; 
-        color: #FFFFFF !important; 
-        border-color: #374151 !important;
+        background-color: #1F2937 !important; color: #FFFFFF !important; border-color: #374151 !important;
     }
     ::placeholder { color: #9CA3AF !important; }
-
-    /* Forzar fondo oscuro en botones */
-    button[kind="secondary"], 
-    button[kind="primaryFormSubmit"],
-    [data-testid="stFileUploader"] button,
-    button[data-testid="stNumberInputStepUp"],
-    button[data-testid="stNumberInputStepDown"],
-    div.stButton > button,
-    div[data-testid="stFormSubmitButton"] > button {
-        background-color: #1F2937 !important;
-        color: #FAFAFA !important;
-        border: 1px solid #374151 !important;
-        border-radius: 8px !important;
+    button[kind="secondary"], button[kind="primaryFormSubmit"], [data-testid="stFileUploader"] button,
+    button[data-testid="stNumberInputStepUp"], button[data-testid="stNumberInputStepDown"],
+    div.stButton > button, div[data-testid="stFormSubmitButton"] > button {
+        background-color: #1F2937 !important; color: #FAFAFA !important; border: 1px solid #374151 !important; border-radius: 8px !important;
     }
-
-    /* Efecto hover para los botones */
-    button[kind="secondary"]:hover, 
-    button[kind="primaryFormSubmit"]:hover,
-    [data-testid="stFileUploader"] button:hover,
-    button[data-testid="stNumberInputStepUp"]:hover,
-    button[data-testid="stNumberInputStepDown"]:hover,
-    div.stButton > button:hover,
-    div[data-testid="stFormSubmitButton"] > button:hover {
-        border-color: #FF7A00 !important;
-        color: #FF7A00 !important;
+    button[kind="secondary"]:hover, button[kind="primaryFormSubmit"]:hover, [data-testid="stFileUploader"] button:hover,
+    button[data-testid="stNumberInputStepUp"]:hover, button[data-testid="stNumberInputStepDown"]:hover,
+    div.stButton > button:hover, div[data-testid="stFormSubmitButton"] > button:hover {
+        border-color: #FF7A00 !important; color: #FF7A00 !important;
     }
-
-    /* Ocultar elementos nativos de Streamlit */
     footer { display: none !important; }
     .stAppDeployButton { display: none !important; }
 </style>
@@ -203,7 +180,6 @@ if opcion == "📝 Registro":
 # --- 2. REPORTAR TAREA ---
 elif opcion == "⚡ Reportar Tarea":
   st.subheader("⚡ Reportar Nueva Acción")
-
   st.info(
       "🔥 **MISIÓN DE LA SEMANA:**\n\n"
       "Difundir el caso de adopción urgente de Bruno en tu estado (+30 pts)."
@@ -225,7 +201,6 @@ elif opcion == "⚡ Reportar Tarea":
 
     with st.container():
       vol_sel = st.selectbox("👤 ¿Quién eres?", list(opciones.keys()))
-
       tareas = {
           "🔥 Misión Semanal: Difusión caso Bruno (+30 pts)": 30,
           "Difusión en redes sociales / estados (+15 pts)": 15,
@@ -268,8 +243,6 @@ elif opcion == "⚡ Reportar Tarea":
     if "ultimo_vol_id" in st.session_state:
       st.divider()
       st.subheader("💬 Encuesta de Experiencia")
-      st.caption("Ayúdanos a evaluar y mejorar la plataforma:")
-
       with st.form("form_feedback", clear_on_submit=True):
         calif = st.slider(
             "Facilidad de la acción realizada (1=Difícil, 5=Muy fácil)", 1, 5, 5
@@ -308,7 +281,6 @@ elif opcion == "👤 Mi Perfil":
     if user:
       v_id, nombre, edad, puntos, foto = user
       nivel = obtener_nivel(puntos)
-
       st.markdown("<br>", unsafe_allow_html=True)
       col1, col2 = st.columns([1, 2])
       with col1:
@@ -343,12 +315,7 @@ elif opcion == "🏆 Ranking e Impacto Real":
 
   if not df.empty:
     total_puntos = df["puntos"].sum()
-
     st.subheader("🌱 Impacto en el Refugio")
-    st.caption(
-        "Tus acciones digitales se traducen en ayuda real para los animales."
-    )
-
     alimento_kg = int(total_puntos / 15)
     vacunas = int(total_puntos / 50)
     adopciones = int(total_puntos / 100)
@@ -360,7 +327,6 @@ elif opcion == "🏆 Ranking e Impacto Real":
 
     st.divider()
     st.subheader("🏆 Leaderboard de Voluntarios")
-
     df["Rango"] = df["puntos"].apply(obtener_nivel)
     df.index = df.index + 1
     st.dataframe(df, use_container_width=True)
@@ -373,10 +339,9 @@ elif opcion == "🏆 Ranking e Impacto Real":
         .str.replace("🥉 ", "")
         .str.replace("🌱 ", "")
     )
-
-    enc_utf8 = "utf-8-sig"
-    csv_excel = df_export.to_csv(index=False, sep=";", encoding=enc_utf8)
-
+    csv_excel = df_export.to_csv(
+        index=False, sep=";", encoding="utf-8-sig"
+    )
     st.download_button(
         label="📥 Descargar Ranking (Excel)",
         data=csv_excel,
@@ -389,12 +354,27 @@ elif opcion == "🏆 Ranking e Impacto Real":
 # --- 5. PANEL DE AUDITORÍA ---
 elif opcion == "🔍 Panel de Auditoría":
   st.subheader("🔒 Acceso Restringido")
-  clave_admin = st.text_input("Ingresa la clave de administrador:", type="password")
+  clave_admin = st.text_input(
+      "Ingresa la clave de administrador:", type="password"
+  )
 
   if clave_admin == "frae2026":
-    st.subheader("📊 Métricas de Satisfacción")
-    st.caption("Datos en tiempo real sobre la experiencia de los voluntarios.")
+    # --- BOTÓN DE RESPALDO SEGURO (SOLO ADMIN) ---
+    st.success("✅ Acceso concedido.")
+    with st.expander("💾 Copia de Seguridad de la Base de Datos"):
+      try:
+        with open("frae_link.db", "rb") as f:
+          st.download_button(
+              label="📥 Descargar Base de Datos Real (.db)",
+              data=f,
+              file_name="frae_link.db",
+              mime="application/octet-stream",
+          )
+      except FileNotFoundError:
+        st.warning("No se encontró el archivo físico de la base de datos.")
 
+    st.divider()
+    st.subheader("📊 Métricas de Satisfacción")
     conn = conectar_db()
     feedback_df = pd.read_sql_query(
         """
@@ -406,24 +386,24 @@ elif opcion == "🔍 Panel de Auditoría":
         conn,
     )
 
-    if feedback_df.empty:
-      st.info("Aún no se han recolectado métricas de experiencia.")
-    else:
+    if not feedback_df.empty:
       promedio_calif = feedback_df["calificacion"].mean()
       col1, col2 = st.columns(2)
       col1.metric("Satisfacción Promedio", f"{promedio_calif:.2f} / 5.0 ⭐")
       col2.metric("Muestras Totales (N)", len(feedback_df))
-
       st.dataframe(feedback_df, use_container_width=True, hide_index=True)
 
-      enc_utf8 = "utf-8-sig"
-      csv_feedback = feedback_df.to_csv(index=False, sep=";", encoding=enc_utf8)
+      csv_feedback = feedback_df.to_csv(
+          index=False, sep=";", encoding="utf-8-sig"
+      )
       st.download_button(
           label="📥 Descargar Reporte de Satisfacción (Excel)",
           data=csv_feedback,
           file_name="metricas_satisfaccion.csv",
           mime="text/csv",
       )
+    else:
+      st.info("Aún no hay métricas de experiencia.")
 
     st.divider()
     st.subheader("📸 Auditoría de Tareas")
@@ -452,46 +432,53 @@ elif opcion == "🔍 Panel de Auditoría":
             st.write("Sin imagen adjunta.")
 
     st.divider()
-    st.subheader("🗑️ Eliminar Registro de Prueba")
-    with st.expander("Gestionar / Borrar Encuestas de Satisfacción"):
+    st.subheader("❌ Invalidar Tarea y Restar Puntos")
+    with st.expander("Rechazar tarea mal registrada o falsa"):
       conn = conectar_db()
-      encuestas_df = pd.read_sql_query(
+      tareas_gestion_df = pd.read_sql_query(
           """
-            SELECT e.id, v.nombre, e.calificacion, e.comentario, e.fecha 
-            FROM encuestas_satisfaccion e
-            JOIN voluntarios v ON e.voluntario_id = v.id
-            ORDER BY e.id DESC
+            SELECT t.id, v.nombre, t.tarea, t.puntos, t.fecha, t.voluntario_id 
+            FROM tareas_registradas t 
+            JOIN voluntarios v ON t.voluntario_id = v.id 
+            ORDER BY t.id DESC
         """,
           conn,
       )
       conn.close()
 
-      if not encuestas_df.empty:
-        opciones_encuesta = {
-            f"ID: {row['id']} | {row['nombre']} | ⭐ {row['calificacion']} ({row['fecha']})": (
-                row["id"]
+      if not tareas_gestion_df.empty:
+        opciones_tarea = {
+            f"ID: {row['id']} | {row['nombre']} | {row['tarea']} (-{row['puntos']} pts)": (
+                row["id"],
+                row["voluntario_id"],
+                row["puntos"],
             )
-            for _, row in encuestas_df.iterrows()
+            for _, row in tareas_gestion_df.iterrows()
         }
-        encuesta_id_sel = st.selectbox(
-            "Selecciona la encuesta a borrar:", list(opciones_encuesta.keys())
+        tarea_id_sel = st.selectbox(
+            "Selecciona la tarea a rechazar:", list(opciones_tarea.keys())
         )
 
-        if st.button("❌ Eliminar esta Encuesta", type="primary"):
-          id_a_borrar = opciones_encuesta[encuesta_id_sel]
+        if st.button("🚫 Rechazar Tarea y Restar Puntos", type="primary"):
+          t_id, v_id, pts_a_restar = opciones_tarea[tarea_id_sel]
           conn = conectar_db()
           cursor = conn.cursor()
           cursor.execute(
-              "DELETE FROM encuestas_satisfaccion WHERE id = ?", (id_a_borrar,)
+              "UPDATE voluntarios SET puntos = MAX(0, puntos - ?) WHERE id = ?",
+              (pts_a_restar, v_id),
+          )
+          cursor.execute(
+              "DELETE FROM tareas_registradas WHERE id = ?", (t_id,)
           )
           conn.commit()
           conn.close()
           st.success(
-              f"Encuesta con ID {id_a_borrar} eliminada correctamente de la base de datos."
+              f"Tarea ID {t_id} eliminada. Se han restado {pts_a_restar} puntos"
+              " al voluntario correctamente."
           )
           st.rerun()
       else:
-        st.info("No hay encuestas registradas para eliminar.")
+        st.info("No hay tareas registradas para rechazar.")
 
   elif clave_admin != "":
     st.error("⚠️ Contraseña incorrecta.")
