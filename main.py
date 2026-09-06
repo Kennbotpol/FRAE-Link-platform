@@ -11,64 +11,51 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 2. CSS PERSONALIZADO (Blindado para forzar Modo Oscuro)
+# 2. CSS PERSONALIZADO (Fix para botones Upload, Submit y +/-)
 st.markdown(
     """
 <style>
-    /* 1. Forzar Fondo Oscuro en la App y el Encabezado Superior (elimina la franja blanca) */
-    .stApp, header[data-testid="stHeader"], .block-container {
-        background-color: #0E1117 !important;
-    }
-
-    /* 2. Forzar Color de Texto Claro en TODA la aplicación */
-    .stApp, .stApp * {
-        color: #FAFAFA !important;
-    }
-
-    /* 3. Barra Lateral Oscura */
-    section[data-testid="stSidebar"] {
-        background-color: #111827 !important;
-        border-right: 1px solid #1F2937 !important;
-    }
-
-    /* 4. Formularios, Inputs, Selects y Caja de Subida (File Uploader) */
+    /* Fondo principal y barra lateral */
+    .stApp, header[data-testid="stHeader"], .block-container { background-color: #0E1117 !important; }
+    .stApp, .stApp * { color: #FAFAFA !important; }
+    section[data-testid="stSidebar"] { background-color: #111827 !important; border-right: 1px solid #1F2937 !important; }
+    
+    /* Inputs genéricos y áreas de carga */
     input, .stTextInput input, .stSelectbox select, .stNumberInput input, 
-    [data-testid="stFileUploader"] > div,
-    [data-testid="stFileUploader"] section, 
-    [data-testid="stFileUploadDropzone"] {
-        background-color: #1F2937 !important;
-        color: #FFFFFF !important;
+    [data-testid="stFileUploader"] > div, [data-testid="stFileUploader"] section, [data-testid="stFileUploadDropzone"] {
+        background-color: #1F2937 !important; 
+        color: #FFFFFF !important; 
         border-color: #374151 !important;
     }
-    
-    /* 5. Asegurar que el placeholder de los inputs no se pierda */
-    ::placeholder {
-        color: #9CA3AF !important;
-    }
+    ::placeholder { color: #9CA3AF !important; }
 
-    /* 6. Botones principales (naranjas) */
-    div.stButton > button {
-        background: linear-gradient(135deg, #FF7A00 0%, #E65C00 100%) !important;
-        color: white !important;
-        border: none !important;
+    /* FIX: Forzar fondo oscuro en botones Upload, Submit y +/- */
+    button[kind="secondary"], 
+    button[kind="primaryFormSubmit"],
+    [data-testid="stFileUploader"] button,
+    button[data-testid="stNumberInputStepUp"],
+    button[data-testid="stNumberInputStepDown"],
+    div.stButton > button,
+    div[data-testid="stFormSubmitButton"] > button {
+        background-color: #1F2937 !important;
+        color: #FAFAFA !important;
+        border: 1px solid #374151 !important;
         border-radius: 8px !important;
-        padding: 10px 24px !important;
-        font-weight: bold !important;
-        transition: all 0.3s ease !important;
-        width: 100% !important;
-    }
-    div.stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(255, 122, 0, 0.4) !important;
-    }
-    
-    /* 7. Botón de Descarga (verde) */
-    div.stDownloadButton > button {
-        background: linear-gradient(135deg, #28A745 0%, #218838 100%) !important;
-        color: white !important;
     }
 
-    /* 8. Ocultar basura innecesaria de Streamlit */
+    /* Efecto hover para los botones */
+    button[kind="secondary"]:hover, 
+    button[kind="primaryFormSubmit"]:hover,
+    [data-testid="stFileUploader"] button:hover,
+    button[data-testid="stNumberInputStepUp"]:hover,
+    button[data-testid="stNumberInputStepDown"]:hover,
+    div.stButton > button:hover,
+    div[data-testid="stFormSubmitButton"] > button:hover {
+        border-color: #FF7A00 !important;
+        color: #FF7A00 !important;
+    }
+
+    /* Ocultar elementos nativos de Streamlit */
     footer { display: none !important; }
     .stAppDeployButton { display: none !important; }
 </style>
